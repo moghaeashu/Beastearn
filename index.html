@@ -65,12 +65,12 @@
         }
         /* Button styling */
         .btn {
-            @apply py-2 px-4 rounded-lg font-semibold shadow-md transition duration-200 ease-in-out;
+            @apply py-2 px-4 rounded-lg font-semibold shadow-md transition duration-200 ease-in-out text-sm sm:text-base; /* Adjusted text size */
         }
-        .btn-primary {
+        .btn-primary { /* Green */
             @apply bg-emerald-500 text-white hover:bg-emerald-600;
         }
-        .btn-secondary {
+        .btn-secondary { /* Gray */
              @apply bg-gray-500 text-white hover:bg-gray-600;
         }
         .btn-red {
@@ -79,13 +79,22 @@
          .btn-violet {
             @apply bg-violet-500 text-white hover:bg-violet-600;
         }
+        .btn-blue { /* For Big */
+            @apply bg-blue-500 text-white hover:bg-blue-600;
+        }
+        .btn-yellow { /* For Small */
+             @apply bg-yellow-500 text-white hover:bg-yellow-600;
+        }
+        .btn-number { /* For numbers */
+             @apply bg-gray-200 text-gray-800 hover:bg-gray-300 border border-gray-400;
+        }
         /* Input styling */
         .input-field {
             @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent;
         }
         /* Message styling */
         .message {
-            @apply p-3 rounded-lg mb-4 text-center font-medium;
+            @apply p-3 rounded-lg mb-4 text-center font-medium text-sm;
         }
         .message-success {
             @apply bg-green-100 text-green-700 border border-green-200;
@@ -96,6 +105,16 @@
         .message-info {
             @apply bg-blue-100 text-blue-700 border border-blue-200;
         }
+         /* Wingo result styling */
+        #wingo-result-display {
+            border: 2px solid #ccc;
+            min-height: 80px; /* Ensure space for result */
+        }
+         #winning-number-display {
+            width: 50px;
+            height: 50px;
+            line-height: 50px; /* Center text vertically */
+         }
     </style>
      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -104,7 +123,7 @@
 
     <div id="app-container">
         <main id="main-content">
-            <div id="deposit-section" class="section active">
+            <div id="deposit-section" class="section">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Deposit Funds</h2>
                 <div id="deposit-message" class="message hidden"></div>
                 <div class="bg-gray-100 p-4 rounded-lg mb-4 border border-gray-200">
@@ -144,7 +163,7 @@
                  <button id="go-to-withdraw-btn" class="btn btn-secondary w-full">Withdraw Funds</button>
             </div>
 
-            <div id="wingo-section" class="section">
+            <div id="wingo-section" class="section active">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Wingo Game</h2>
                  <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-lg shadow-md text-white mb-4 text-center">
                     <p class="text-sm uppercase tracking-wider mb-1">Available Balance</p>
@@ -157,16 +176,49 @@
                     <input type="number" id="bet-amount" class="input-field" placeholder="Enter amount to bet">
                 </div>
 
-                <p class="text-sm font-medium text-gray-700 mb-2">Choose a Color:</p>
-                <div class="grid grid-cols-3 gap-4 mb-6">
-                    <button data-color="Green" class="wingo-bet-button btn btn-primary">Green</button>
-                    <button data-color="Red" class="wingo-bet-button btn btn-red">Red</button>
-                    <button data-color="Violet" class="wingo-bet-button btn btn-violet">Violet</button> </div>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Join Color:</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button data-bet-type="Color" data-bet-value="Green" class="wingo-bet-button btn btn-primary">Green</button>
+                            <button data-bet-type="Color" data-bet-value="Violet" class="wingo-bet-button btn btn-violet">Violet</button>
+                            <button data-bet-type="Color" data-bet-value="Red" class="wingo-bet-button btn btn-red">Red</button>
+                        </div>
+                    </div>
 
-                <div id="wingo-result" class="text-center mt-6 p-4 rounded-lg bg-gray-100 border border-gray-200 hidden">
-                    <p class="text-lg font-semibold">Result: <span id="winning-color" class="font-bold"></span></p>
-                    <p id="win-loss-message" class="mt-2 text-xl"></p>
+                    <div>
+                         <p class="text-sm font-medium text-gray-700 mb-2">Join Number:</p>
+                         <div class="grid grid-cols-5 gap-2">
+                             <button data-bet-type="Number" data-bet-value="0" class="wingo-bet-button btn btn-number">0</button>
+                             <button data-bet-type="Number" data-bet-value="1" class="wingo-bet-button btn btn-number">1</button>
+                             <button data-bet-type="Number" data-bet-value="2" class="wingo-bet-button btn btn-number">2</button>
+                             <button data-bet-type="Number" data-bet-value="3" class="wingo-bet-button btn btn-number">3</button>
+                             <button data-bet-type="Number" data-bet-value="4" class="wingo-bet-button btn btn-number">4</button>
+                             <button data-bet-type="Number" data-bet-value="5" class="wingo-bet-button btn btn-number">5</button>
+                             <button data-bet-type="Number" data-bet-value="6" class="wingo-bet-button btn btn-number">6</button>
+                             <button data-bet-type="Number" data-bet-value="7" class="wingo-bet-button btn btn-number">7</button>
+                             <button data-bet-type="Number" data-bet-value="8" class="wingo-bet-button btn btn-number">8</button>
+                             <button data-bet-type="Number" data-bet-value="9" class="wingo-bet-button btn btn-number">9</button>
+                         </div>
+                    </div>
+
+                    <div>
+                         <p class="text-sm font-medium text-gray-700 mb-2">Join Size:</p>
+                         <div class="grid grid-cols-2 gap-2">
+                             <button data-bet-type="Size" data-bet-value="Big" class="wingo-bet-button btn btn-blue">Big</button>
+                             <button data-bet-type="Size" data-bet-value="Small" class="wingo-bet-button btn btn-yellow">Small</button>
+                         </div>
+                    </div>
                 </div>
+
+                <div id="wingo-result-display" class="text-center mt-6 p-4 rounded-lg bg-gray-100 border border-gray-200 hidden">
+                    <p class="text-sm font-medium text-gray-600 mb-2">Result:</p>
+                    <div class="flex justify-center items-center space-x-3 mb-3">
+                        <span id="winning-number-display" class="inline-block text-2xl font-bold rounded-full text-white text-center">?</span>
+                        <span id="winning-colors-display" class="text-lg font-semibold"></span>
+                        <span id="winning-size-display" class="text-lg font-semibold"></span>
+                    </div>
+                    <p id="win-loss-message" class="mt-2 text-lg font-bold"></p> </div>
             </div>
 
             <div id="history-section" class="section">
@@ -178,8 +230,9 @@
 
             <div id="withdraw-section" class="section">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Withdraw Funds</h2>
-                 <button id="back-to-wallet-btn" class="absolute top-4 left-4 text-gray-600 hover:text-gray-800">
-                    <i class="fas fa-arrow-left"></i> Back
+                 <button id="back-to-wallet-btn" class="absolute top-4 left-4 text-gray-600 hover:text-gray-800 hidden sm:block"> <i class="fas fa-arrow-left mr-1"></i> Back
+                 </button>
+                 <button id="back-to-wallet-btn-mobile" class="text-gray-600 hover:text-gray-800 mb-3 sm:hidden"> <i class="fas fa-arrow-left mr-1"></i> Back to Wallet
                  </button>
                 <div id="withdraw-message" class="message hidden"></div>
                  <div class="bg-gray-100 p-4 rounded-lg mb-4 border border-gray-200">
@@ -187,7 +240,8 @@
                      <p class="text-sm text-gray-500 mt-1">Minimum Withdrawal: ₹500</p>
                 </div>
 
-                <form id="withdraw-form" action="YOUR_FORMSPREE_ENDPOINT_HERE" method="POST"> <div class="mb-4">
+                <form id="withdraw-form" method="POST">
+                    <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Select Amount</label>
                         <div class="grid grid-cols-2 gap-3">
                             <button type="button" data-amount="500" class="withdraw-amount-btn btn bg-gray-200 text-gray-800 hover:bg-emerald-100">₹500</button>
@@ -215,14 +269,13 @@
 
         <nav id="bottom-nav" class="bg-white border-t border-gray-200 shadow-md">
             <div class="max-w-md mx-auto grid grid-cols-4 gap-2 text-center text-gray-600 text-xs py-2">
-                <button data-section="deposit-section" class="nav-item active pt-1 pb-1 flex flex-col items-center">
+                <button data-section="deposit-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
                     <i class="fas fa-arrow-down text-lg mb-1"></i> Deposit
                 </button>
                 <button data-section="wallet-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
                      <i class="fas fa-wallet text-lg mb-1"></i> Wallet
                 </button>
-                <button data-section="wingo-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
-                    <i class="fas fa-dice text-lg mb-1"></i> Wingo
+                <button data-section="wingo-section" class="nav-item active pt-1 pb-1 flex flex-col items-center"> <i class="fas fa-dice text-lg mb-1"></i> Wingo
                 </button>
                 <button data-section="history-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
                      <i class="fas fa-history text-lg mb-1"></i> History
@@ -235,7 +288,17 @@
         // --- Constants ---
         const MIN_DEPOSIT = 100;
         const MIN_WITHDRAWAL = 500;
-        const FORMSPREE_ENDPOINT = "YOUR_FORMSPREE_ENDPOINT_HERE"; // IMPORTANT: Replace this!
+        const FORMSPREE_ENDPOINT = "https://formspree.io/f/mqaqanbg"; // User Provided Endpoint
+
+        // Wingo Payout Multipliers (Net multiplier: payout - 1)
+        const PAYOUTS = {
+            COLOR_RED_GREEN: 2, // Bet 100, win 200 (net 100)
+            COLOR_VIOLET: 4.5,  // Bet 100, win 450 (net 350)
+            NUMBER: 9,          // Bet 100, win 900 (net 800)
+            SIZE: 2,            // Bet 100, win 200 (net 100)
+            // Special case for Red/Green when Violet hits (0 or 5)
+            COLOR_RED_GREEN_WITH_VIOLET: 1.5 // Bet 100, win 150 (net 50)
+        };
 
         // --- DOM Elements ---
         const sections = document.querySelectorAll('.section');
@@ -270,6 +333,7 @@
         const withdrawUpiInput = document.getElementById('withdraw-upi');
         const confirmWithdrawButton = document.getElementById('confirm-withdraw-button');
         const backToWalletBtn = document.getElementById('back-to-wallet-btn');
+        const backToWalletBtnMobile = document.getElementById('back-to-wallet-btn-mobile');
         const currentBalanceHiddenInput = document.getElementById('current-balance-hidden');
 
 
@@ -277,8 +341,10 @@
         const wingoMessage = document.getElementById('wingo-message');
         const betAmountInput = document.getElementById('bet-amount');
         const wingoBetButtons = document.querySelectorAll('.wingo-bet-button');
-        const wingoResultDiv = document.getElementById('wingo-result');
-        const winningColorSpan = document.getElementById('winning-color');
+        const wingoResultDisplayDiv = document.getElementById('wingo-result-display');
+        const winningNumberDisplaySpan = document.getElementById('winning-number-display');
+        const winningColorsDisplaySpan = document.getElementById('winning-colors-display');
+        const winningSizeDisplaySpan = document.getElementById('winning-size-display');
         const winLossMessageP = document.getElementById('win-loss-message');
 
         // --- State ---
@@ -292,36 +358,34 @@
             history = JSON.parse(localStorage.getItem('history') || '[]');
 
             // Set Formspree endpoint
-            if (FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
-                 console.warn("Formspree endpoint not set. Withdrawals will not be sent via email.");
-                 // Optionally disable withdraw button or show a warning
-                 withdrawMessage.textContent = "Withdrawal form not configured. Please set Formspree endpoint.";
-                 withdrawMessage.className = 'message message-error';
-                 withdrawMessage.classList.remove('hidden');
-                 confirmWithdrawButton.disabled = true;
-                 confirmWithdrawButton.classList.add('opacity-50', 'cursor-not-allowed');
+            if (!FORMSPREE_ENDPOINT || FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
+                 console.warn("Formspree endpoint not set correctly. Withdrawals may not work.");
+                 // Optionally disable withdraw button or show a warning in withdraw section
+                 // We'll handle showing message when user navigates there if needed
+                 withdrawForm.action = "#"; // Prevent submission if not set
             } else {
                 withdrawForm.action = FORMSPREE_ENDPOINT;
             }
 
-
             updateBalanceDisplay();
             renderHistory();
-            // Activate the default section (Deposit)
-            showSection('deposit-section');
+            // Activate the default section (Wingo)
+            showSection('wingo-section'); // Default to Wingo as requested
             setupEventListeners();
         }
 
         // --- State Management ---
         function updateBalance(newBalance) {
-            balance = newBalance;
+            balance = Math.max(0, newBalance); // Ensure balance doesn't go negative
             localStorage.setItem('balance', balance.toFixed(2));
             updateBalanceDisplay();
         }
 
         function addHistory(type, amount, details = '') {
             const timestamp = new Date();
-            const entry = { type, amount, timestamp: timestamp.toISOString(), details };
+            // Ensure amount is always positive for history display consistency
+            const displayAmount = Math.abs(amount);
+            const entry = { type, amount: displayAmount, timestamp: timestamp.toISOString(), details };
             history.unshift(entry); // Add to the beginning
             localStorage.setItem('history', JSON.stringify(history));
             renderHistory();
@@ -346,12 +410,13 @@
 
             history.forEach(entry => {
                 const div = document.createElement('div');
-                div.className = 'p-3 rounded-lg border';
+                div.className = 'p-3 rounded-lg border text-sm'; // Smaller text for history
                 const date = new Date(entry.timestamp);
-                const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; // Shorter time format
                 let detailsText = entry.details ? `<p class="text-xs text-gray-500 mt-1">${entry.details}</p>` : '';
                 let amountClass = '';
                 let sign = '';
+                let typeText = entry.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()); // Capitalize words
 
                 switch(entry.type) {
                     case 'deposit':
@@ -368,11 +433,13 @@
                         div.classList.add('bg-blue-50', 'border-blue-200');
                         amountClass = 'text-blue-600';
                         sign = '+';
+                        typeText = 'Wingo Win';
                         break;
                     case 'wingo_loss':
                         div.classList.add('bg-orange-50', 'border-orange-200');
                         amountClass = 'text-orange-600';
                         sign = '-';
+                         typeText = 'Wingo Loss';
                         break;
                     default:
                          div.classList.add('bg-gray-50', 'border-gray-200');
@@ -382,10 +449,10 @@
                 div.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div>
-                            <p class="font-medium capitalize">${entry.type.replace('_', ' ')}</p>
+                            <p class="font-medium">${typeText}</p>
                             <p class="text-xs text-gray-500">${formattedDate}</p>
                         </div>
-                        <p class="font-semibold text-lg ${amountClass}">${sign}₹${entry.amount.toFixed(2)}</p>
+                        <p class="font-semibold text-base ${amountClass}">${sign}₹${entry.amount.toFixed(2)}</p>
                     </div>
                     ${detailsText}
                 `;
@@ -400,12 +467,19 @@
             const activeSection = document.getElementById(sectionId);
             if (activeSection) {
                 activeSection.classList.add('active');
-                // Special handling for withdraw section (it's not in main nav)
+                // Special handling for withdraw section
                 if (sectionId === 'withdraw-section') {
-                     document.getElementById('bottom-nav').style.display = 'none'; // Hide nav when in withdraw
-                     activeSection.classList.remove('hidden'); // Ensure it's not hidden by default styles
+                     document.getElementById('bottom-nav').style.display = 'none'; // Hide nav
+                     activeSection.classList.remove('hidden');
+                     // Show back buttons
+                     backToWalletBtn.classList.remove('hidden');
+                     backToWalletBtnMobile.classList.remove('hidden');
+
                 } else {
-                    document.getElementById('bottom-nav').style.display = 'block'; // Show nav for main sections
+                    document.getElementById('bottom-nav').style.display = 'block'; // Show nav
+                     // Hide back buttons if they exist in other sections (though not currently used)
+                     backToWalletBtn.classList.add('hidden');
+                     backToWalletBtnMobile.classList.add('hidden');
                     // Update nav item styles
                     navItems.forEach(item => {
                         item.classList.remove('active');
@@ -422,8 +496,7 @@
              hideMessage('wallet-message');
              hideMessage('wingo-message');
              hideMessage('withdraw-message');
-             wingoResultDiv.classList.add('hidden'); // Hide wingo result
-
+             wingoResultDisplayDiv.classList.add('hidden'); // Hide wingo result
         }
 
         function showMessage(elementId, text, type = 'success') {
@@ -460,19 +533,9 @@
                  return;
             }
              hideMessage('deposit-message');
-
-             // Construct the UPI payment URL
-             // Note: Payer name (pn) is optional but good practice
-             // Note: Transaction Note (tn) is optional
              const upiUrl = `upi://pay?pa=${upiId}&pn=User&am=${amount.toFixed(2)}&cu=INR&tn=Deposit`;
-
-             // Attempt to open the UPI link
-             // This will only work on devices with UPI apps installed
              window.location.href = upiUrl;
-
-             // Inform the user (as we can't confirm payment)
              showMessage('deposit-message', 'Attempting to open UPI app. Please complete payment and then confirm below.', 'info');
-             // Optionally pre-fill the confirmation amount
              depositAmountInput.value = amount.toFixed(2);
         }
 
@@ -481,28 +544,27 @@
             const amount = parseFloat(depositAmountInput.value);
             const utr = utrInput.value.trim();
 
-            hideMessage('deposit-message'); // Clear previous messages
+            hideMessage('deposit-message');
 
             if (isNaN(amount) || amount < MIN_DEPOSIT) {
                 showMessage('deposit-message', `Minimum deposit amount is ₹${MIN_DEPOSIT}.`, 'error');
                 return;
             }
-            if (!utr || utr.length !== 12 || !/^\d+$/.test(utr)) { // Basic UTR validation (12 digits)
+            if (!utr || utr.length !== 12 || !/^\d+$/.test(utr)) {
                 showMessage('deposit-message', 'Please enter a valid 12-digit UTR number.', 'error');
                 return;
             }
 
-            // --- Simulation: Assume payment is verified ---
+            // Add amount to balance
             const newBalance = balance + amount;
             updateBalance(newBalance);
-            addHistory('deposit', amount, `UTR: ${utr}`);
+            addHistory('deposit', amount, `UTR: ${utr}`); // Log positive amount for deposit
 
             showMessage('deposit-message', `Successfully deposited ₹${amount.toFixed(2)}. Your new balance is ₹${balance.toFixed(2)}.`, 'success');
 
-            // Clear inputs
             depositAmountInput.value = '';
             utrInput.value = '';
-            depositAmountUpiInput.value = ''; // Also clear the pay amount input
+            depositAmountUpiInput.value = '';
         }
 
          function handleWithdrawAmountButtonClick(event) {
@@ -510,14 +572,13 @@
             if (button) {
                 const amount = button.getAttribute('data-amount');
                 withdrawAmountInput.value = amount;
-                // Highlight selected button (optional)
                 withdrawAmountButtons.forEach(btn => btn.classList.replace('bg-emerald-100', 'bg-gray-200'));
-                 button.classList.replace('bg-gray-200','bg-emerald-100');
+                button.classList.replace('bg-gray-200','bg-emerald-100');
             }
         }
 
         async function handleWithdrawSubmit(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
             const amount = parseFloat(withdrawAmountInput.value);
             const name = withdrawNameInput.value.trim();
@@ -533,79 +594,102 @@
                 showMessage('withdraw-message', 'Insufficient balance for this withdrawal.', 'error');
                 return;
             }
-            if (!name) {
-                showMessage('withdraw-message', 'Please enter your name.', 'error');
+            if (!name || !upi) {
+                showMessage('withdraw-message', 'Please enter both name and UPI ID.', 'error');
                 return;
             }
-            if (!upi) { // Basic check, could add regex for UPI format
-                showMessage('withdraw-message', 'Please enter your UPI ID.', 'error');
-                return;
-            }
-             if (FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
+             if (!FORMSPREE_ENDPOINT || FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
                  showMessage('withdraw-message', 'Withdrawal form not configured by admin.', 'error');
                  return;
              }
 
-
-            // Disable button during submission
             confirmWithdrawButton.disabled = true;
             confirmWithdrawButton.textContent = 'Submitting...';
             confirmWithdrawButton.classList.add('opacity-50');
 
-
-            // Prepare form data for Formspree
             const formData = new FormData(withdrawForm);
 
             try {
                 const response = await fetch(FORMSPREE_ENDPOINT, {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (response.ok) {
-                    // --- Subtract from balance and add history ONLY after successful form submission ---
                     const newBalance = balance - amount;
                     updateBalance(newBalance);
-                    addHistory('withdrawal', amount, `To: ${name} (${upi})`);
+                    addHistory('withdrawal', amount, `To: ${name} (${upi})`); // Log positive amount for withdrawal history
 
                     showMessage('withdraw-message', `Withdrawal request for ₹${amount.toFixed(2)} submitted successfully. Your new balance is ₹${balance.toFixed(2)}.`, 'success');
 
-                    // Clear form
                     withdrawAmountInput.value = '';
                     withdrawNameInput.value = '';
                     withdrawUpiInput.value = '';
-                     withdrawAmountButtons.forEach(btn => btn.classList.replace('bg-emerald-100', 'bg-gray-200'));
-
+                    withdrawAmountButtons.forEach(btn => btn.classList.replace('bg-emerald-100', 'bg-gray-200'));
 
                 } else {
-                    // Handle Formspree error (e.g., endpoint invalid, server error)
                      const errorData = await response.json();
                      console.error("Formspree error:", errorData);
-                     showMessage('withdraw-message', 'Failed to submit withdrawal request. Please try again later.', 'error');
+                     showMessage('withdraw-message', 'Failed to submit withdrawal request. Please try again.', 'error');
                 }
             } catch (error) {
                  console.error("Network or fetch error:", error);
-                 showMessage('withdraw-message', 'Network error. Could not submit withdrawal request.', 'error');
+                 showMessage('withdraw-message', 'Network error. Could not submit request.', 'error');
             } finally {
-                 // Re-enable button
                  confirmWithdrawButton.disabled = false;
                  confirmWithdrawButton.textContent = 'Submit Withdrawal Request';
                  confirmWithdrawButton.classList.remove('opacity-50');
             }
         }
 
+        // --- Wingo Game Logic ---
+
+        // Function to get result properties (color, size) based on number
+        function getResultProperties(number) {
+            let colors = [];
+            let size = '';
+            let numberColorClass = 'bg-gray-500'; // Default
+
+            if ([1, 3, 7, 9].includes(number)) {
+                colors.push('Green');
+                numberColorClass = 'bg-emerald-500';
+            }
+            if ([2, 4, 6, 8].includes(number)) {
+                colors.push('Red');
+                 numberColorClass = 'bg-red-500';
+            }
+            if (number === 0) {
+                colors.push('Green', 'Violet');
+                 numberColorClass = 'bg-gradient-to-br from-emerald-500 to-violet-500'; // Gradient for 0
+            }
+            if (number === 5) {
+                colors.push('Red', 'Violet');
+                numberColorClass = 'bg-gradient-to-br from-red-500 to-violet-500'; // Gradient for 5
+            }
+
+            if (number >= 6 && number <= 9) {
+                size = 'Big';
+            } else if (number >= 1 && number <= 4) {
+                size = 'Small';
+            } else {
+                size = 'N/A'; // 0 and 5 are neither Big nor Small for betting
+            }
+
+            return { colors, size, numberColorClass };
+        }
+
+        // Main Wingo Bet Handler
         function handleWingoBet(event) {
             const button = event.target.closest('.wingo-bet-button');
             if (!button) return;
 
-            const chosenColor = button.getAttribute('data-color');
+            const betType = button.getAttribute('data-bet-type'); // 'Color', 'Number', 'Size'
+            const betValue = button.getAttribute('data-bet-value'); // 'Green', '5', 'Big'
             const betAmount = parseFloat(betAmountInput.value);
 
             hideMessage('wingo-message');
-            wingoResultDiv.classList.add('hidden'); // Hide previous result
+            wingoResultDisplayDiv.classList.add('hidden');
 
             if (isNaN(betAmount) || betAmount <= 0) {
                 showMessage('wingo-message', 'Please enter a valid bet amount.', 'error');
@@ -616,50 +700,93 @@
                 return;
             }
 
-            // --- Simulate Game Logic ---
-            const colors = ['Green', 'Red', 'Violet'];
-            // Adjust probabilities: e.g., Violet is rarer
-            const weightedColors = ['Green', 'Green', 'Green', 'Red', 'Red', 'Red', 'Violet'];
-            const winningColor = weightedColors[Math.floor(Math.random() * weightedColors.length)];
+            // --- Simulate Game Result ---
+            const winningNumber = Math.floor(Math.random() * 10); // 0-9
+            const resultProps = getResultProperties(winningNumber);
 
-            let payoutMultiplier = 2; // Standard payout for Red/Green
-            let winAmount = 0;
-            let newBalance;
-            let historyType;
-            let historyDetails = `Bet: ₹${betAmount.toFixed(2)} on ${chosenColor}. Result: ${winningColor}.`;
+            let netWinAmount = 0; // Amount won/lost (positive for win, negative for loss)
+            let message = '';
+            let messageType = 'error'; // Default to loss message
+            let historyType = 'wingo_loss';
 
+            // --- Determine Win/Loss and Payout ---
+            switch (betType) {
+                case 'Color':
+                    if (resultProps.colors.includes(betValue)) { // Check if the bet color is in the result colors
+                        if (betValue === 'Violet') {
+                            netWinAmount = betAmount * (PAYOUTS.COLOR_VIOLET - 1);
+                        } else { // Red or Green bet
+                            if (resultProps.colors.includes('Violet')) { // Violet also hit (0 or 5)
+                                netWinAmount = betAmount * (PAYOUTS.COLOR_RED_GREEN_WITH_VIOLET - 1);
+                            } else { // Normal Red/Green win
+                                netWinAmount = betAmount * (PAYOUTS.COLOR_RED_GREEN - 1);
+                            }
+                        }
+                    } else {
+                        netWinAmount = -betAmount; // Loss
+                    }
+                    break;
 
-            if (chosenColor === winningColor) {
-                // Win
-                if (winningColor === 'Violet') {
-                    payoutMultiplier = 4.5; // Higher payout for Violet
-                }
-                winAmount = betAmount * (payoutMultiplier -1) ; // Net win amount
-                newBalance = balance + winAmount;
-                winLossMessageP.textContent = `You Won ₹${(winAmount + betAmount).toFixed(2)}!`; // Show gross win
-                winLossMessageP.className = 'mt-2 text-xl font-bold text-green-600';
-                historyType = 'wingo_win';
-                addHistory(historyType, winAmount, historyDetails); // Log net win
-            } else {
-                // Loss
-                winAmount = betAmount; // Amount lost
-                newBalance = balance - winAmount;
-                winLossMessageP.textContent = `You Lost ₹${winAmount.toFixed(2)}`;
-                winLossMessageP.className = 'mt-2 text-xl font-bold text-red-600';
-                historyType = 'wingo_loss';
-                 addHistory(historyType, winAmount, historyDetails); // Log loss
+                case 'Number':
+                    if (parseInt(betValue) === winningNumber) {
+                        netWinAmount = betAmount * (PAYOUTS.NUMBER - 1);
+                    } else {
+                        netWinAmount = -betAmount; // Loss
+                    }
+                    break;
+
+                case 'Size':
+                    if (betValue === resultProps.size) { // Win only if size matches and is not N/A
+                         netWinAmount = betAmount * (PAYOUTS.SIZE - 1);
+                    } else {
+                         netWinAmount = -betAmount; // Loss (includes 0 and 5 results)
+                    }
+                    break;
             }
 
+            // --- Update Balance and History ---
+            const newBalance = balance + netWinAmount;
             updateBalance(newBalance);
 
-            // Display result
-            winningColorSpan.textContent = winningColor;
-             winningColorSpan.className = `font-bold ${
-                winningColor === 'Green' ? 'text-green-600' :
-                winningColor === 'Red' ? 'text-red-600' :
-                'text-violet-600' // Violet
-             }`;
-            wingoResultDiv.classList.remove('hidden');
+            // --- Prepare Display Message and History ---
+            const betDetail = `Bet: ₹${betAmount.toFixed(2)} on ${betType} ${betValue}. Result: ${winningNumber} (${resultProps.colors.join('/')}${resultProps.size !== 'N/A' ? '/' + resultProps.size : ''})`;
+
+            if (netWinAmount > 0) {
+                message = `You Won ₹${netWinAmount.toFixed(2)}!`;
+                messageType = 'success';
+                historyType = 'wingo_win';
+                 addHistory(historyType, netWinAmount, betDetail); // Log net win amount
+            } else {
+                message = `You Lost ₹${betAmount.toFixed(2)}`; // Show the amount betted as loss
+                messageType = 'error';
+                historyType = 'wingo_loss';
+                 addHistory(historyType, betAmount, betDetail); // Log bet amount as loss amount
+            }
+
+            // --- Display Result ---
+            winningNumberDisplaySpan.textContent = winningNumber;
+            winningNumberDisplaySpan.className = `inline-block text-2xl font-bold rounded-full text-white text-center ${resultProps.numberColorClass}`; // Apply color class
+             winningNumberDisplaySpan.style.width = '50px'; // Ensure consistent size
+             winningNumberDisplaySpan.style.height = '50px';
+             winningNumberDisplaySpan.style.lineHeight = '50px';
+
+            winningColorsDisplaySpan.textContent = resultProps.colors.join(' / ');
+             // Color the text based on primary color (or Violet if present)
+             if (resultProps.colors.includes('Violet')) winningColorsDisplaySpan.className = 'text-lg font-semibold text-violet-600';
+             else if (resultProps.colors.includes('Green')) winningColorsDisplaySpan.className = 'text-lg font-semibold text-emerald-600';
+             else if (resultProps.colors.includes('Red')) winningColorsDisplaySpan.className = 'text-lg font-semibold text-red-600';
+             else winningColorsDisplaySpan.className = 'text-lg font-semibold text-gray-600';
+
+
+            winningSizeDisplaySpan.textContent = resultProps.size !== 'N/A' ? resultProps.size : '';
+             if (resultProps.size === 'Big') winningSizeDisplaySpan.className = 'text-lg font-semibold text-blue-600';
+             else if (resultProps.size === 'Small') winningSizeDisplaySpan.className = 'text-lg font-semibold text-yellow-600';
+             else winningSizeDisplaySpan.className = 'text-lg font-semibold text-gray-600';
+
+
+            winLossMessageP.textContent = message;
+            winLossMessageP.className = `mt-2 text-lg font-bold ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`;
+            wingoResultDisplayDiv.classList.remove('hidden');
 
             // Clear bet amount
             betAmountInput.value = '';
@@ -684,6 +811,7 @@
              withdrawForm.addEventListener('submit', handleWithdrawSubmit);
              withdrawAmountButtons.forEach(button => button.addEventListener('click', handleWithdrawAmountButtonClick));
              backToWalletBtn.addEventListener('click', () => showSection('wallet-section'));
+             backToWalletBtnMobile.addEventListener('click', () => showSection('wallet-section'));
 
 
             // Wingo
