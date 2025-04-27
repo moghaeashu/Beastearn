@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading App Sim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* Basic styling for active nav item */
+        .nav-item.active {
+            color: #10B981; /* Emerald-500 */
+            border-top: 2px solid #10B981;
+        }
+        /* Hide sections by default */
+        .section {
+            display: none;
+        }
+        /* Show the active section */
+        .section.active {
+            display: block;
+        }
+        /* Custom scrollbar for history */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Ensure body takes full height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+        }
+        body {
+             background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Main container styling */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            max-width: 480px; /* Max width for mobile view */
+            margin: 0 auto; /* Center the container */
+            background-color: #ffffff; /* White background for the app area */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Subtle shadow */
+        }
+        #main-content {
+            flex-grow: 1; /* Takes remaining vertical space */
+            overflow-y: auto; /* Allows content scrolling */
+            padding: 1rem; /* Padding for content */
+        }
+        #bottom-nav {
+            flex-shrink: 0; /* Prevents shrinking */
+        }
+        /* Button styling */
+        .btn {
+            @apply py-2 px-4 rounded-lg font-semibold shadow-md transition duration-200 ease-in-out;
+        }
+        .btn-primary {
+            @apply bg-emerald-500 text-white hover:bg-emerald-600;
+        }
+        .btn-secondary {
+             @apply bg-gray-500 text-white hover:bg-gray-600;
+        }
+        .btn-red {
+            @apply bg-red-500 text-white hover:bg-red-600;
+        }
+         .btn-violet {
+            @apply bg-violet-500 text-white hover:bg-violet-600;
+        }
+        /* Input styling */
+        .input-field {
+            @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent;
+        }
+        /* Message styling */
+        .message {
+            @apply p-3 rounded-lg mb-4 text-center font-medium;
+        }
+        .message-success {
+            @apply bg-green-100 text-green-700 border border-green-200;
+        }
+        .message-error {
+            @apply bg-red-100 text-red-700 border border-red-200;
+        }
+        .message-info {
+            @apply bg-blue-100 text-blue-700 border border-blue-200;
+        }
+    </style>
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <div id="app-container">
+        <main id="main-content">
+            <div id="deposit-section" class="section active">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Deposit Funds</h2>
+                <div id="deposit-message" class="message hidden"></div>
+                <div class="bg-gray-100 p-4 rounded-lg mb-4 border border-gray-200">
+                    <p class="text-gray-700 mb-2">Please pay to the UPI ID below:</p>
+                    <p class="text-lg font-semibold text-emerald-600 break-words" id="upi-id">8979873681@mbk</p>
+                    <p class="text-sm text-gray-500 mt-1">Minimum Deposit: ₹100</p>
+                </div>
+                <div class="mb-4">
+                    <label for="deposit-amount-upi" class="block text-sm font-medium text-gray-700 mb-1">Amount to Pay</label>
+                    <input type="number" id="deposit-amount-upi" class="input-field" placeholder="Enter amount (e.g., 100)">
+                </div>
+                <button id="pay-button" class="btn btn-primary w-full mb-6">Pay Now via UPI App</button>
+
+                <hr class="my-6 border-gray-300">
+
+                <h3 class="text-xl font-semibold mb-3 text-gray-800">Confirm Deposit</h3>
+                <p class="text-sm text-gray-600 mb-4">After successful payment, enter the details below:</p>
+                <div class="mb-4">
+                    <label for="deposit-amount" class="block text-sm font-medium text-gray-700 mb-1">Amount Deposited</label>
+                    <input type="number" id="deposit-amount" class="input-field" placeholder="e.g., 100">
+                </div>
+                <div class="mb-4">
+                    <label for="utr-number" class="block text-sm font-medium text-gray-700 mb-1">UTR Number</label>
+                    <input type="text" id="utr-number" class="input-field" placeholder="Enter the 12-digit UTR">
+                </div>
+                <button id="confirm-deposit-button" class="btn btn-primary w-full">Confirm Deposit</button>
+            </div>
+
+            <div id="wallet-section" class="section">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">My Wallet</h2>
+                 <div id="wallet-message" class="message hidden"></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-green-500 p-6 rounded-xl shadow-lg text-white mb-6">
+                    <p class="text-sm uppercase tracking-wider mb-1">Current Balance</p>
+                    <p class="text-4xl font-bold">₹<span id="current-balance">0.00</span></p>
+                </div>
+                 <button id="go-to-deposit-btn" class="btn btn-primary w-full mb-3">Deposit Funds</button>
+                 <button id="go-to-withdraw-btn" class="btn btn-secondary w-full">Withdraw Funds</button>
+            </div>
+
+            <div id="wingo-section" class="section">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Wingo Game</h2>
+                 <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-lg shadow-md text-white mb-4 text-center">
+                    <p class="text-sm uppercase tracking-wider mb-1">Available Balance</p>
+                    <p class="text-2xl font-bold">₹<span id="wingo-balance">0.00</span></p>
+                </div>
+                <div id="wingo-message" class="message hidden"></div>
+
+                <div class="mb-4">
+                    <label for="bet-amount" class="block text-sm font-medium text-gray-700 mb-1">Bet Amount</label>
+                    <input type="number" id="bet-amount" class="input-field" placeholder="Enter amount to bet">
+                </div>
+
+                <p class="text-sm font-medium text-gray-700 mb-2">Choose a Color:</p>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <button data-color="Green" class="wingo-bet-button btn btn-primary">Green</button>
+                    <button data-color="Red" class="wingo-bet-button btn btn-red">Red</button>
+                    <button data-color="Violet" class="wingo-bet-button btn btn-violet">Violet</button> </div>
+
+                <div id="wingo-result" class="text-center mt-6 p-4 rounded-lg bg-gray-100 border border-gray-200 hidden">
+                    <p class="text-lg font-semibold">Result: <span id="winning-color" class="font-bold"></span></p>
+                    <p id="win-loss-message" class="mt-2 text-xl"></p>
+                </div>
+            </div>
+
+            <div id="history-section" class="section">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Transaction History</h2>
+                <div id="history-list" class="space-y-3 history-list max-h-[60vh] overflow-y-auto pr-2">
+                    <p id="no-history" class="text-gray-500 text-center">No transactions yet.</p>
+                </div>
+            </div>
+
+            <div id="withdraw-section" class="section">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Withdraw Funds</h2>
+                 <button id="back-to-wallet-btn" class="absolute top-4 left-4 text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-arrow-left"></i> Back
+                 </button>
+                <div id="withdraw-message" class="message hidden"></div>
+                 <div class="bg-gray-100 p-4 rounded-lg mb-4 border border-gray-200">
+                    <p class="text-gray-700">Available Balance: <span class="font-semibold text-emerald-600">₹<span id="withdraw-balance">0.00</span></span></p>
+                     <p class="text-sm text-gray-500 mt-1">Minimum Withdrawal: ₹500</p>
+                </div>
+
+                <form id="withdraw-form" action="YOUR_FORMSPREE_ENDPOINT_HERE" method="POST"> <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Amount</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" data-amount="500" class="withdraw-amount-btn btn bg-gray-200 text-gray-800 hover:bg-emerald-100">₹500</button>
+                            <button type="button" data-amount="1000" class="withdraw-amount-btn btn bg-gray-200 text-gray-800 hover:bg-emerald-100">₹1000</button>
+                            <button type="button" data-amount="2000" class="withdraw-amount-btn btn bg-gray-200 text-gray-800 hover:bg-emerald-100">₹2000</button>
+                            <button type="button" data-amount="5000" class="withdraw-amount-btn btn bg-gray-200 text-gray-800 hover:bg-emerald-100">₹5000</button>
+                        </div>
+                        <input type="number" id="withdraw-amount" name="amount" class="input-field mt-3" placeholder="Or enter custom amount (min 500)" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="withdraw-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <input type="text" id="withdraw-name" name="name" class="input-field" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="withdraw-upi" class="block text-sm font-medium text-gray-700 mb-1">Your UPI ID</label>
+                        <input type="text" id="withdraw-upi" name="upi_id" class="input-field" placeholder="Enter your UPI ID for payment" required>
+                    </div>
+                    <input type="hidden" id="current-balance-hidden" name="current_balance_before_withdraw">
+
+                    <button type="submit" id="confirm-withdraw-button" class="btn btn-primary w-full">Submit Withdrawal Request</button>
+                </form>
+            </div>
+
+        </main>
+
+        <nav id="bottom-nav" class="bg-white border-t border-gray-200 shadow-md">
+            <div class="max-w-md mx-auto grid grid-cols-4 gap-2 text-center text-gray-600 text-xs py-2">
+                <button data-section="deposit-section" class="nav-item active pt-1 pb-1 flex flex-col items-center">
+                    <i class="fas fa-arrow-down text-lg mb-1"></i> Deposit
+                </button>
+                <button data-section="wallet-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
+                     <i class="fas fa-wallet text-lg mb-1"></i> Wallet
+                </button>
+                <button data-section="wingo-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
+                    <i class="fas fa-dice text-lg mb-1"></i> Wingo
+                </button>
+                <button data-section="history-section" class="nav-item pt-1 pb-1 flex flex-col items-center">
+                     <i class="fas fa-history text-lg mb-1"></i> History
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // --- Constants ---
+        const MIN_DEPOSIT = 100;
+        const MIN_WITHDRAWAL = 500;
+        const FORMSPREE_ENDPOINT = "YOUR_FORMSPREE_ENDPOINT_HERE"; // IMPORTANT: Replace this!
+
+        // --- DOM Elements ---
+        const sections = document.querySelectorAll('.section');
+        const navItems = document.querySelectorAll('.nav-item');
+        const currentBalanceElement = document.getElementById('current-balance');
+        const wingoBalanceElement = document.getElementById('wingo-balance');
+        const withdrawBalanceElement = document.getElementById('withdraw-balance');
+        const historyListElement = document.getElementById('history-list');
+        const noHistoryElement = document.getElementById('no-history');
+
+        // Deposit Elements
+        const depositMessage = document.getElementById('deposit-message');
+        const depositAmountInput = document.getElementById('deposit-amount');
+        const utrInput = document.getElementById('utr-number');
+        const confirmDepositButton = document.getElementById('confirm-deposit-button');
+        const payButton = document.getElementById('pay-button');
+        const depositAmountUpiInput = document.getElementById('deposit-amount-upi');
+        const upiIdElement = document.getElementById('upi-id');
+
+        // Wallet Elements
+        const walletMessage = document.getElementById('wallet-message');
+        const goToDepositBtn = document.getElementById('go-to-deposit-btn');
+        const goToWithdrawBtn = document.getElementById('go-to-withdraw-btn');
+
+        // Withdraw Elements
+        const withdrawSection = document.getElementById('withdraw-section');
+        const withdrawMessage = document.getElementById('withdraw-message');
+        const withdrawForm = document.getElementById('withdraw-form');
+        const withdrawAmountButtons = document.querySelectorAll('.withdraw-amount-btn');
+        const withdrawAmountInput = document.getElementById('withdraw-amount');
+        const withdrawNameInput = document.getElementById('withdraw-name');
+        const withdrawUpiInput = document.getElementById('withdraw-upi');
+        const confirmWithdrawButton = document.getElementById('confirm-withdraw-button');
+        const backToWalletBtn = document.getElementById('back-to-wallet-btn');
+        const currentBalanceHiddenInput = document.getElementById('current-balance-hidden');
+
+
+        // Wingo Elements
+        const wingoMessage = document.getElementById('wingo-message');
+        const betAmountInput = document.getElementById('bet-amount');
+        const wingoBetButtons = document.querySelectorAll('.wingo-bet-button');
+        const wingoResultDiv = document.getElementById('wingo-result');
+        const winningColorSpan = document.getElementById('winning-color');
+        const winLossMessageP = document.getElementById('win-loss-message');
+
+        // --- State ---
+        let balance = 0;
+        let history = []; // Array of { type: 'deposit'/'withdrawal'/'wingo_win'/'wingo_loss', amount: number, timestamp: date, details: string }
+
+        // --- Initialization ---
+        function initializeApp() {
+            // Load state from localStorage
+            balance = parseFloat(localStorage.getItem('balance') || '0');
+            history = JSON.parse(localStorage.getItem('history') || '[]');
+
+            // Set Formspree endpoint
+            if (FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
+                 console.warn("Formspree endpoint not set. Withdrawals will not be sent via email.");
+                 // Optionally disable withdraw button or show a warning
+                 withdrawMessage.textContent = "Withdrawal form not configured. Please set Formspree endpoint.";
+                 withdrawMessage.className = 'message message-error';
+                 withdrawMessage.classList.remove('hidden');
+                 confirmWithdrawButton.disabled = true;
+                 confirmWithdrawButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                withdrawForm.action = FORMSPREE_ENDPOINT;
+            }
+
+
+            updateBalanceDisplay();
+            renderHistory();
+            // Activate the default section (Deposit)
+            showSection('deposit-section');
+            setupEventListeners();
+        }
+
+        // --- State Management ---
+        function updateBalance(newBalance) {
+            balance = newBalance;
+            localStorage.setItem('balance', balance.toFixed(2));
+            updateBalanceDisplay();
+        }
+
+        function addHistory(type, amount, details = '') {
+            const timestamp = new Date();
+            const entry = { type, amount, timestamp: timestamp.toISOString(), details };
+            history.unshift(entry); // Add to the beginning
+            localStorage.setItem('history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        // --- UI Updates ---
+        function updateBalanceDisplay() {
+            const formattedBalance = balance.toFixed(2);
+            currentBalanceElement.textContent = formattedBalance;
+            wingoBalanceElement.textContent = formattedBalance;
+            withdrawBalanceElement.textContent = formattedBalance;
+            currentBalanceHiddenInput.value = formattedBalance; // Update hidden input for form
+        }
+
+        function renderHistory() {
+             historyListElement.innerHTML = ''; // Clear existing list
+            if (history.length === 0) {
+                noHistoryElement.style.display = 'block';
+                return;
+            }
+            noHistoryElement.style.display = 'none';
+
+            history.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-lg border';
+                const date = new Date(entry.timestamp);
+                const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                let detailsText = entry.details ? `<p class="text-xs text-gray-500 mt-1">${entry.details}</p>` : '';
+                let amountClass = '';
+                let sign = '';
+
+                switch(entry.type) {
+                    case 'deposit':
+                        div.classList.add('bg-green-50', 'border-green-200');
+                        amountClass = 'text-green-600';
+                        sign = '+';
+                        break;
+                    case 'withdrawal':
+                        div.classList.add('bg-red-50', 'border-red-200');
+                        amountClass = 'text-red-600';
+                        sign = '-';
+                        break;
+                     case 'wingo_win':
+                        div.classList.add('bg-blue-50', 'border-blue-200');
+                        amountClass = 'text-blue-600';
+                        sign = '+';
+                        break;
+                    case 'wingo_loss':
+                        div.classList.add('bg-orange-50', 'border-orange-200');
+                        amountClass = 'text-orange-600';
+                        sign = '-';
+                        break;
+                    default:
+                         div.classList.add('bg-gray-50', 'border-gray-200');
+                         amountClass = 'text-gray-600';
+                }
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium capitalize">${entry.type.replace('_', ' ')}</p>
+                            <p class="text-xs text-gray-500">${formattedDate}</p>
+                        </div>
+                        <p class="font-semibold text-lg ${amountClass}">${sign}₹${entry.amount.toFixed(2)}</p>
+                    </div>
+                    ${detailsText}
+                `;
+                historyListElement.appendChild(div);
+            });
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            sections.forEach(section => section.classList.remove('active'));
+            // Show the target section
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) {
+                activeSection.classList.add('active');
+                // Special handling for withdraw section (it's not in main nav)
+                if (sectionId === 'withdraw-section') {
+                     document.getElementById('bottom-nav').style.display = 'none'; // Hide nav when in withdraw
+                     activeSection.classList.remove('hidden'); // Ensure it's not hidden by default styles
+                } else {
+                    document.getElementById('bottom-nav').style.display = 'block'; // Show nav for main sections
+                    // Update nav item styles
+                    navItems.forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('data-section') === sectionId) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
+            }
+             // Scroll to top of content area when switching sections
+             document.getElementById('main-content').scrollTop = 0;
+             // Hide any persistent messages
+             hideMessage('deposit-message');
+             hideMessage('wallet-message');
+             hideMessage('wingo-message');
+             hideMessage('withdraw-message');
+             wingoResultDiv.classList.add('hidden'); // Hide wingo result
+
+        }
+
+        function showMessage(elementId, text, type = 'success') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            element.textContent = text;
+            element.className = `message message-${type}`; // Reset classes
+            element.classList.remove('hidden');
+        }
+
+        function hideMessage(elementId) {
+             const element = document.getElementById(elementId);
+             if (element) {
+                element.classList.add('hidden');
+                element.textContent = '';
+             }
+        }
+
+        // --- Event Handlers ---
+        function handleNavClick(event) {
+            const button = event.target.closest('.nav-item');
+            if (button) {
+                const sectionId = button.getAttribute('data-section');
+                showSection(sectionId);
+            }
+        }
+
+        function handlePayButtonClick() {
+            const amount = parseFloat(depositAmountUpiInput.value);
+            const upiId = upiIdElement.textContent;
+
+            if (isNaN(amount) || amount <= 0) {
+                 showMessage('deposit-message', 'Please enter a valid amount to pay.', 'error');
+                 return;
+            }
+             hideMessage('deposit-message');
+
+             // Construct the UPI payment URL
+             // Note: Payer name (pn) is optional but good practice
+             // Note: Transaction Note (tn) is optional
+             const upiUrl = `upi://pay?pa=${upiId}&pn=User&am=${amount.toFixed(2)}&cu=INR&tn=Deposit`;
+
+             // Attempt to open the UPI link
+             // This will only work on devices with UPI apps installed
+             window.location.href = upiUrl;
+
+             // Inform the user (as we can't confirm payment)
+             showMessage('deposit-message', 'Attempting to open UPI app. Please complete payment and then confirm below.', 'info');
+             // Optionally pre-fill the confirmation amount
+             depositAmountInput.value = amount.toFixed(2);
+        }
+
+
+        function handleConfirmDeposit() {
+            const amount = parseFloat(depositAmountInput.value);
+            const utr = utrInput.value.trim();
+
+            hideMessage('deposit-message'); // Clear previous messages
+
+            if (isNaN(amount) || amount < MIN_DEPOSIT) {
+                showMessage('deposit-message', `Minimum deposit amount is ₹${MIN_DEPOSIT}.`, 'error');
+                return;
+            }
+            if (!utr || utr.length !== 12 || !/^\d+$/.test(utr)) { // Basic UTR validation (12 digits)
+                showMessage('deposit-message', 'Please enter a valid 12-digit UTR number.', 'error');
+                return;
+            }
+
+            // --- Simulation: Assume payment is verified ---
+            const newBalance = balance + amount;
+            updateBalance(newBalance);
+            addHistory('deposit', amount, `UTR: ${utr}`);
+
+            showMessage('deposit-message', `Successfully deposited ₹${amount.toFixed(2)}. Your new balance is ₹${balance.toFixed(2)}.`, 'success');
+
+            // Clear inputs
+            depositAmountInput.value = '';
+            utrInput.value = '';
+            depositAmountUpiInput.value = ''; // Also clear the pay amount input
+        }
+
+         function handleWithdrawAmountButtonClick(event) {
+            const button = event.target.closest('.withdraw-amount-btn');
+            if (button) {
+                const amount = button.getAttribute('data-amount');
+                withdrawAmountInput.value = amount;
+                // Highlight selected button (optional)
+                withdrawAmountButtons.forEach(btn => btn.classList.replace('bg-emerald-100', 'bg-gray-200'));
+                 button.classList.replace('bg-gray-200','bg-emerald-100');
+            }
+        }
+
+        async function handleWithdrawSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const amount = parseFloat(withdrawAmountInput.value);
+            const name = withdrawNameInput.value.trim();
+            const upi = withdrawUpiInput.value.trim();
+
+            hideMessage('withdraw-message');
+
+            if (isNaN(amount) || amount < MIN_WITHDRAWAL) {
+                showMessage('withdraw-message', `Minimum withdrawal amount is ₹${MIN_WITHDRAWAL}.`, 'error');
+                return;
+            }
+            if (amount > balance) {
+                showMessage('withdraw-message', 'Insufficient balance for this withdrawal.', 'error');
+                return;
+            }
+            if (!name) {
+                showMessage('withdraw-message', 'Please enter your name.', 'error');
+                return;
+            }
+            if (!upi) { // Basic check, could add regex for UPI format
+                showMessage('withdraw-message', 'Please enter your UPI ID.', 'error');
+                return;
+            }
+             if (FORMSPREE_ENDPOINT === "YOUR_FORMSPREE_ENDPOINT_HERE") {
+                 showMessage('withdraw-message', 'Withdrawal form not configured by admin.', 'error');
+                 return;
+             }
+
+
+            // Disable button during submission
+            confirmWithdrawButton.disabled = true;
+            confirmWithdrawButton.textContent = 'Submitting...';
+            confirmWithdrawButton.classList.add('opacity-50');
+
+
+            // Prepare form data for Formspree
+            const formData = new FormData(withdrawForm);
+
+            try {
+                const response = await fetch(FORMSPREE_ENDPOINT, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // --- Subtract from balance and add history ONLY after successful form submission ---
+                    const newBalance = balance - amount;
+                    updateBalance(newBalance);
+                    addHistory('withdrawal', amount, `To: ${name} (${upi})`);
+
+                    showMessage('withdraw-message', `Withdrawal request for ₹${amount.toFixed(2)} submitted successfully. Your new balance is ₹${balance.toFixed(2)}.`, 'success');
+
+                    // Clear form
+                    withdrawAmountInput.value = '';
+                    withdrawNameInput.value = '';
+                    withdrawUpiInput.value = '';
+                     withdrawAmountButtons.forEach(btn => btn.classList.replace('bg-emerald-100', 'bg-gray-200'));
+
+
+                } else {
+                    // Handle Formspree error (e.g., endpoint invalid, server error)
+                     const errorData = await response.json();
+                     console.error("Formspree error:", errorData);
+                     showMessage('withdraw-message', 'Failed to submit withdrawal request. Please try again later.', 'error');
+                }
+            } catch (error) {
+                 console.error("Network or fetch error:", error);
+                 showMessage('withdraw-message', 'Network error. Could not submit withdrawal request.', 'error');
+            } finally {
+                 // Re-enable button
+                 confirmWithdrawButton.disabled = false;
+                 confirmWithdrawButton.textContent = 'Submit Withdrawal Request';
+                 confirmWithdrawButton.classList.remove('opacity-50');
+            }
+        }
+
+        function handleWingoBet(event) {
+            const button = event.target.closest('.wingo-bet-button');
+            if (!button) return;
+
+            const chosenColor = button.getAttribute('data-color');
+            const betAmount = parseFloat(betAmountInput.value);
+
+            hideMessage('wingo-message');
+            wingoResultDiv.classList.add('hidden'); // Hide previous result
+
+            if (isNaN(betAmount) || betAmount <= 0) {
+                showMessage('wingo-message', 'Please enter a valid bet amount.', 'error');
+                return;
+            }
+            if (betAmount > balance) {
+                showMessage('wingo-message', 'Insufficient balance to place this bet.', 'error');
+                return;
+            }
+
+            // --- Simulate Game Logic ---
+            const colors = ['Green', 'Red', 'Violet'];
+            // Adjust probabilities: e.g., Violet is rarer
+            const weightedColors = ['Green', 'Green', 'Green', 'Red', 'Red', 'Red', 'Violet'];
+            const winningColor = weightedColors[Math.floor(Math.random() * weightedColors.length)];
+
+            let payoutMultiplier = 2; // Standard payout for Red/Green
+            let winAmount = 0;
+            let newBalance;
+            let historyType;
+            let historyDetails = `Bet: ₹${betAmount.toFixed(2)} on ${chosenColor}. Result: ${winningColor}.`;
+
+
+            if (chosenColor === winningColor) {
+                // Win
+                if (winningColor === 'Violet') {
+                    payoutMultiplier = 4.5; // Higher payout for Violet
+                }
+                winAmount = betAmount * (payoutMultiplier -1) ; // Net win amount
+                newBalance = balance + winAmount;
+                winLossMessageP.textContent = `You Won ₹${(winAmount + betAmount).toFixed(2)}!`; // Show gross win
+                winLossMessageP.className = 'mt-2 text-xl font-bold text-green-600';
+                historyType = 'wingo_win';
+                addHistory(historyType, winAmount, historyDetails); // Log net win
+            } else {
+                // Loss
+                winAmount = betAmount; // Amount lost
+                newBalance = balance - winAmount;
+                winLossMessageP.textContent = `You Lost ₹${winAmount.toFixed(2)}`;
+                winLossMessageP.className = 'mt-2 text-xl font-bold text-red-600';
+                historyType = 'wingo_loss';
+                 addHistory(historyType, winAmount, historyDetails); // Log loss
+            }
+
+            updateBalance(newBalance);
+
+            // Display result
+            winningColorSpan.textContent = winningColor;
+             winningColorSpan.className = `font-bold ${
+                winningColor === 'Green' ? 'text-green-600' :
+                winningColor === 'Red' ? 'text-red-600' :
+                'text-violet-600' // Violet
+             }`;
+            wingoResultDiv.classList.remove('hidden');
+
+            // Clear bet amount
+            betAmountInput.value = '';
+        }
+
+
+        // --- Setup Event Listeners ---
+        function setupEventListeners() {
+            // Navigation
+            navItems.forEach(item => item.addEventListener('click', handleNavClick));
+
+            // Deposit
+            confirmDepositButton.addEventListener('click', handleConfirmDeposit);
+            payButton.addEventListener('click', handlePayButtonClick);
+
+
+            // Wallet Buttons
+            goToDepositBtn.addEventListener('click', () => showSection('deposit-section'));
+            goToWithdrawBtn.addEventListener('click', () => showSection('withdraw-section'));
+
+             // Withdraw
+             withdrawForm.addEventListener('submit', handleWithdrawSubmit);
+             withdrawAmountButtons.forEach(button => button.addEventListener('click', handleWithdrawAmountButtonClick));
+             backToWalletBtn.addEventListener('click', () => showSection('wallet-section'));
+
+
+            // Wingo
+            wingoBetButtons.forEach(button => button.addEventListener('click', handleWingoBet));
+        }
+
+        // --- Start the App ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+
+</body>
+</html>
